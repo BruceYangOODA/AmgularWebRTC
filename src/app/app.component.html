@@ -1,0 +1,117 @@
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h2>線上討論室</h2>
+            <hr>
+            <div style="margin-right: 60px; padding-left: 30px;">
+                目前討論室: <ng-container *ngFor="let room of getRoomList()">
+                    <span style="margin-left: 20px;">{{room}}</span>
+                </ng-container>
+            </div>
+            <hr>
+        </div>
+        <hr>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-5">
+            <div class="form-group">
+                <label for="username">名稱</label>
+                <input (keyup)="userNameOnKey($event)" (blur)="userNameBlur($event)" [disabled]="!isEnableInput"
+                    type="text" class="form-control" id="username" placeholder="輸入使用者名稱">
+                <!-- <small id="userHelp" class="form-text text-muted">Type your username.</small> -->
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <label for="roomname">討論室</label>
+            <input (keyup)="roomNameOnKey($event)" (blur)="roomNameBlur($event)" [disabled]="!isEnableInput" type="text"
+                class="form-control" id="roomname" placeholder="輸入討論室名稱">
+        </div>
+        <div class="col sm-2">
+            <div style="margin-top:19px;" class="pull-right">
+                <button [hidden]="!isJoinValid" type="button" class="btn btn-primary" (click)="connetChatRoom()">
+                    {{isEnableInput?'加入':'離開'}}</button>
+            </div>
+        </div>
+    </div>
+    <div class="container row">
+        <div style="margin-right: 60px; padding-left: 30px;">
+            目前討論室人數: {{getNumOfUser()==null?'':getNumOfUser()}} 人
+        </div>
+        <div>
+            <select class="form-control" [(ngModel)]="talkto">
+                <option [attr.selected]="'All'==talkto? true: null">All</option>
+                <ng-container *ngFor="let user of userArray">
+                    <option *ngIf="socket_id && user.ID!==socket_id && user.room===roomName" [value]=user.name
+                        [attr.selected]="user.name==talkto? true: null">{{user.name}}</option>
+                </ng-container>
+            </select>
+        </div>
+        <div style="margin-left: 30px;">
+            <button (click)="callUser()" [disabled]="isOnStream">視訊</button>
+        </div>
+    </div>
+    <div class="panel panel-primary" [hidden]="!isOnStream">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 text-center">
+                    <div>
+                        <h3>本地</h3>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 text-center">
+                    <div>
+                        <h3>遠端</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-6">
+                    <div class="container">
+                        <video #local_video [autoplay]="true" [muted]="true"></video>
+
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="container">
+                        <video #remote_video [autoplay]="true"></video>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <div class="row">
+                <div class="col-6  text-center">
+                    <button (click)="stopPlayLocal()">停止</button>
+                </div>
+                <div class="col-6  text-center">                    
+                    <button (click)="answerCall()" [hidden]="!isShowAccept">接受視訊</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-prmary" style="height: 300px; padding:15px;">
+        <div class="panel-heading row" style="padding-bottom: 30px;">
+            <div class="col-xs-8 col-sm-8 col-md-9">
+                <input type="text" class="form-control" [(ngModel)]="inputMSG" [value]="inputMSG"
+                    (keyup)="msgInputKeyup($event)">
+            </div>
+            <div class="col-xs-4 col-sm-4 col-md-3">
+                <button mat-button class="btn btn-success pull-right" (click)="sendMSG()">發信</button>
+            </div>
+        </div>
+        <div class="panel-body">
+            <ng-container *ngFor="let item of sortData() ">
+                <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8"
+                [class.text-right]="item.from===userName"
+                [class.red]="item.to===userName">
+                    <span><strong>{{item.from}} : </strong> {{item.to===userName?' 密語 ':' '}}</span>
+                    {{item.msg}}
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>

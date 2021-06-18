@@ -1,0 +1,15 @@
+{
+    "/data": {
+      "target": " http://localhost:4444 ",
+      "secure": false,
+      "changeOrigin": true,
+      "pathRewrite": {"^/data" : ""}
+
+    },
+    "/socket/*": {
+      "target": " http://localhost:4444/socket.io",
+      "secure": false,      
+      "ws": false,
+      "pathRewrite": {"^/socket" : ""}
+    }
+  }
